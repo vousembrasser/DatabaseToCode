@@ -4,7 +4,7 @@ import com.dingwd.utils.MyStringUtils;
 
 public class utilFun {
 
-    public static String humpTo(String var, String to) {
+    public static String lowerFirstWordAndHumpTo(String var, String to) {
         return MyStringUtils.humpToUnderline(var).replaceAll("_", to);
     }
 

@@ -30,9 +30,25 @@ public class ProjectInfo {
     }
 
     public ProjectInfo makePackage(PackageTypeEnum packageTypeEnum, String multiplePackage, String featureName, String... refTemplates) {
-        models.add(new ModelInfo(projectName, multiplePackage, featureName, new TypeNameAndKind(packageTypeEnum), false, List.of(refTemplates)));
-        return this;
+        return this.makePackage(packageTypeEnum, packageTypeEnum.getPrefixAndSuffix(), multiplePackage, featureName, refTemplates);
+//        models.add(new ModelInfo(projectName, multiplePackage, featureName, new TypeNameAndKind(packageTypeEnum), false, List.of(refTemplates)));
+//        return this;
     }
+
+    public ProjectInfo makePackage(PackageTypeEnum packageTypeEnum, FileNamePrefixAndSuffix prefixAndSuffix, String multiplePackage, String featureName, boolean typeFirst, String... refTemplates) {
+        return this.makePackage(packageTypeEnum, prefixAndSuffix, multiplePackage, featureName,typeFirst, refTemplates);
+//        models.add(new ModelInfo(projectName, multiplePackage, featureName, new TypeNameAndKind(packageTypeEnum, prefixAndSuffix), typeFirst, List.of(refTemplates)));
+//        return this;
+    }
+
+    public ProjectInfo makePackage(PackageTypeEnum packageTypeEnum, String multiplePackage, String featureName, boolean typeFirst, String... refTemplates) {
+        return this.makePackage(packageTypeEnum, packageTypeEnum.getPrefixAndSuffix(), multiplePackage, featureName,typeFirst, refTemplates);
+//        models.add(new ModelInfo(projectName, multiplePackage, featureName, new TypeNameAndKind(packageTypeEnum), typeFirst, List.of(refTemplates)));
+//        return this;
+    }
+
+
+
 
     public ProjectInfo setSub(PackageTypeEnum packageTypeEnum, FileNamePrefixAndSuffix prefixAndSuffix, String... refTemplates) {
         ModelInfo modelInfo = models.getLast();

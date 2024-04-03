@@ -1,6 +1,7 @@
 package com.dingwd.service;
 
 import com.dingwd.domain.ParaMap;
+import com.dingwd.var.ClassParam;
 import freemarker.cache.FileTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -32,7 +33,7 @@ public class FreeMarkerService {
     @Resource
     private ResourceLoader resourceLoader;
 
-    public void generatorFile(Map<String, Object> input, String templateFileName, String savePath, String fileName)  {
+    public void generatorFile(Map<String, Object> input, String templateFileName, String savePath, String fileName) {
         if (!templateFileName.contains(".ftl")) {
             templateFileName = templateFileName + ".ftl";
         }
@@ -86,7 +87,7 @@ public class FreeMarkerService {
             Iterator<String> iterator = iterator(reader);
             while (iterator.hasNext()) {
                 try {
-                    line = changLine(ParaMap.INSTANCE.getParameters(), iterator.next());
+                    line = changeLine(ParaMap.INSTANCE.getParameters(), iterator.next());
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -102,7 +103,7 @@ public class FreeMarkerService {
         return tempFile;
     }
 
-    public Iterator<String> iterator(BufferedReader reader) {
+    private Iterator<String> iterator(BufferedReader reader) {
         return new Iterator<>() {
             String nextLine = null;
 
@@ -133,99 +134,152 @@ public class FreeMarkerService {
         };
     }
 
-    private List<List<int[]>> getBracketPairs(String s) {
-        Stack<Integer> stack = new Stack<>();
-        List<int[]> pairs = new ArrayList<>();
-        List<List<int[]>> list = new ArrayList<>();
-        boolean have = false;
+//    private List<List<int[]>> getBracketPairs(String s) {
+//        Stack<Integer> stack = new Stack<>();
+//        List<int[]> pairs = new ArrayList<>();
+//        List<List<int[]>> list = new ArrayList<>();
+//        boolean have = false;
+//
+//        for (int i = 0; i < s.length(); i++) {
+//            char c = s.charAt(i);
+//            if (!have && c == '&' && (i + 1 < s.length()) && s.charAt(i + 1) == '{') {
+//                have = true;
+//            } else if (have && c == '{') {
+//                stack.push(i);
+//            } else if (have && c == '}') {
+//                if (!stack.isEmpty()) {
+//                    int leftIndex = stack.pop();
+//                    pairs.add(new int[]{leftIndex, i});
+//                    if (stack.isEmpty()) {
+//                        have = false;
+//                        list.add(pairs);
+//                    }
+//                    if (!have) {
+//                        pairs = new ArrayList<>();
+//                    }
+//
+//                } else {
+//                    // 处理右括号没有匹配的情况
+//                    throw new RuntimeException("Unmatched '}': " + s);
+//                }
+//            }
+//        }
+//
+//        while (!stack.isEmpty()) {
+//            // 处理左括号没有匹配的情况
+//            throw new RuntimeException("Unmatched '{': " + s);
+//        }
+//
+//        return list;
+//    }
 
+    public static void main(String[] args) throws NoSuchFieldException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        FreeMarkerService freeMarkerService = new FreeMarkerService();
+        ClassParam classParam = new ClassParam();
+        ;
+        classParam.setClassName("TestAdc");
+        System.out.println(freeMarkerService.changeLine(Map.of("classParam", classParam), "123123&{utilFun.lowerFirstWordAndHumpTo(${classParam.className},/)}end."));
+    }
+
+
+    public List<List<int[]>> findBracketPairs(String s) {
+        Stack<Integer> openBrackets = new Stack<>();
+        List<List<int[]>> bracketPairsList = new ArrayList<>();
+        List<int[]> currentPairList = new ArrayList<>();
+
+        boolean haveFlag = false;
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
-            if (!have && c == '&' && (i + 1 <= s.length()) && s.charAt(i + 1) == '{') {
-                have = true;
-            } else if (have && c == '{') {
-                stack.push(i);
-            } else if (have && c == '}') {
-                if (!stack.isEmpty()) {
-                    int leftIndex = stack.pop();
-                    pairs.add(new int[]{leftIndex, i});
-                    if (stack.isEmpty()) {
-                        have = false;
-                        list.add(pairs);
-                    }
-                    if (!have) {
-                        pairs = new ArrayList<>();
-                    }
 
+            if (!haveFlag && c == '&' && i + 1 < s.length() && s.charAt(i + 1) == '{') {
+                haveFlag = true;
+                continue;
+            }
+
+            if (!haveFlag) {
+                continue;
+            }
+
+            if (c == '{') {
+                openBrackets.push(i);
+            } else if (c == '}') {
+                if (!openBrackets.isEmpty()) {
+                    int leftIndex = openBrackets.pop();
+                    currentPairList.add(new int[]{leftIndex, i});
+
+                    if (openBrackets.isEmpty()) {
+                        haveFlag = false;
+                        bracketPairsList.add(currentPairList);
+                        currentPairList = new ArrayList<>();
+                    }
                 } else {
-                    // 处理右括号没有匹配的情况
-                    throw new RuntimeException("Unmatched '}': " + s);
+                    throw new IllegalArgumentException("Unmatched '}': " + s);
                 }
             }
         }
 
-        while (!stack.isEmpty()) {
-            // 处理左括号没有匹配的情况
-            throw new RuntimeException("Unmatched '{': " + s);
+        if (!openBrackets.isEmpty()) {
+            throw new IllegalArgumentException("Unmatched '{': " + s);
         }
 
-        return list;
+        return bracketPairsList;
     }
 
-    private String changLine(Map<String, Object> parameters, String line) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException {
-        List<List<int[]>> listss = getBracketPairs(line);
+    private String changeLine(Map<String, Object> parameters, String line) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException {
+        List<List<int[]>> listss = findBracketPairs(line);
 
         for (List<int[]> startAndEndIndex : listss) {
             if (startAndEndIndex.size() > 1) {
                 for (int i = 0; i < startAndEndIndex.size(); i++) {
-                    int[] temp = startAndEndIndex.get(i);
-                    if (i != startAndEndIndex.size() - 1) {
-                        String ss = line.substring(temp[0] + 1, temp[1]);
-                        if (line.charAt(temp[0] - 1) == '$' && ss.contains(".")) {
-                            Field nameField = parameters.get(ss.split("\\.")[0]).getClass().getDeclaredField(ss.split("\\.")[1]);
-                            // 设置访问权限
-                            nameField.setAccessible(true);
-                            String res = (String) nameField.get(parameters.get(ss.split("\\.")[0]));
-                            if (res == null) {
-                                throw new RuntimeException("字段" + ss.split("\\.")[0] + "." + nameField.getName() + "为空");
-                            }
-                            changLineIndex(temp, res, listss);
-                            line = line.substring(0, temp[0] - 1) + res + line.substring(temp[1] + 1);
-                        }
-                    } else {
-                        if (line.charAt(temp[0] - 1) == '&') {
-                            String res = invokeNesting(line.substring(temp[0] + 1, temp[1]));
-                            changLineIndex(temp, res, listss);
-                            line = line.substring(0, temp[0] - 1) + res + line.substring(temp[1] + 1);
-                        }
-                    }
+                    line = processPair(parameters, line, listss, startAndEndIndex, i);
                 }
             } else {
-                int[] temp = startAndEndIndex.getFirst();
-                if (line.charAt(temp[0] - 1) == '&') {
-                    String res = invoke(line.substring(temp[0] + 1, temp[1]));
-                    changLineIndex(temp, res, listss);
-                    line = line.substring(0, temp[0] - 1) + res + line.substring(temp[1] + 1);
-                }
+                line = processPair(parameters, line, listss, startAndEndIndex, 0);
             }
         }
         return line;
     }
 
-    private void changLineIndex(int[] temp, String nameValue, List<List<int[]>> listss) {
-        int oldStr = (temp[1] + 1) - (temp[0] - 1);
-        int newStr = nameValue.length();
-        int res = newStr - oldStr;
-        for (List<int[]> ints : listss) {
-            for (int[] change : ints) {
-                if (change[0] == temp[0] && change[1] == temp[1]) {
+
+    private String processPair(Map<String, Object> parameters, String line, List<List<int[]>> listss, List<int[]> startAndEndIndex, int index) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException {
+        int[] temp = startAndEndIndex.get(index);
+        if (line.charAt(temp[0] - 1) == '$') {
+            String ss = line.substring(temp[0] + 1, temp[1]);
+            if (ss.contains(".")) {
+                Object clazz = parameters.get(ss.split("\\.")[0]);
+                if (clazz == null) {
+                    throw new NullPointerException("为查询到" + ss.split("\\.")[0] + "的变量");
+                }
+                Field nameField = parameters.get(clazz).getClass().getDeclaredField(ss.split("\\.")[1]);
+                nameField.setAccessible(true);
+                String res = (String) nameField.get(parameters.get(ss.split("\\.")[0]));
+                if (res == null) {
+                    throw new NullPointerException("字段" + ss.split("\\.")[0] + "." + nameField.getName() + "为空");
+                }
+                updateLineIndexes(temp, res.length(), listss);
+                return line.substring(0, temp[0] - 1) + res + line.substring(temp[1] + 1);
+            }
+        } else if (line.charAt(temp[0] - 1) == '&') {
+            String res = invoke(line.substring(temp[0] + 1, temp[1]));
+            updateLineIndexes(temp, res.length(), listss);
+            return line.substring(0, temp[0] - 1) + res + line.substring(temp[1] + 1);
+        }
+        return line;
+    }
+
+    private void updateLineIndexes(int[] indices, int newStringLength, List<List<int[]>> lineChanges) {
+        int oldStr = (indices[1] + 1) - (indices[0] - 1);
+        int lengthDifference = newStringLength - oldStr;
+        for (List<int[]> changes : lineChanges) {
+            for (int[] change : changes) {
+                if (change[0] == indices[0] && change[1] == indices[1]) {
                     continue;
                 }
-                if (change[0] > temp[1]) {
-                    change[0] = change[0] + res;
-                    change[1] = change[1] + res;
-                } else if (change[0] < temp[1] && change[1] > temp[1]) {
-                    change[1] = change[1] + res;
+                if (change[0] > indices[1]) {
+                    change[0] += lengthDifference;
+                    change[1] += lengthDifference;
+                } else if (change[0] < indices[1] && change[1] > indices[1]) {
+                    change[1] += lengthDifference;
                 }
             }
         }
@@ -234,6 +288,7 @@ public class FreeMarkerService {
 
     private static String invoke(String str) throws ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         String[] parts = str.split("\\.");
+
         String className = "com.dingwd.var.util." + parts[0];
         String methodNameWithParams = parts[1];
 
@@ -255,7 +310,7 @@ public class FreeMarkerService {
             }
         }
         if (method == null) {
-            throw new RuntimeException("Method not found");
+            throw new RuntimeException("Method not found: " + methodName + "(" + Arrays.toString(params) + ")");
         }
 
         // 创建对象并调用方法
@@ -263,6 +318,7 @@ public class FreeMarkerService {
         Object result = method.invoke(instance, params);
         return (String) result;
     }
+
     public String invokeNesting(String methodCall) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         String[] funsTemp = methodCall.splitWithDelimiters("utilFun", 0);
         List<String> funs = new ArrayList<>();

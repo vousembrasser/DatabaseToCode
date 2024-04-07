@@ -1,4 +1,4 @@
-package com.dingwd.service.file.impl;
+package com.dingwd.service.file;
 
 import com.dingwd.domain.ModelInfo;
 

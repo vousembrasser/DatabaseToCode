@@ -1,6 +1,7 @@
 package com.dingwd.service.file.impl;
 
 import com.dingwd.domain.ModelInfo;
+import com.dingwd.service.file.FileTypeFactory;
 import com.dingwd.utils.JavaTypeConstant;
 import org.springframework.stereotype.Service;
 

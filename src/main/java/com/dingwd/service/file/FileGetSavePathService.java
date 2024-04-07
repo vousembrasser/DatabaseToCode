@@ -1,7 +1,6 @@
 package com.dingwd.service.file;
 
 import com.dingwd.domain.ModelInfo;
-import com.dingwd.service.file.impl.FileTypeFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -3,6 +3,7 @@ package com.dingwd.domain;
 import com.dingwd.enums.PackageTypeEnum;
 import lombok.Getter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,10 @@ public class ProjectInfo {
     }
 
     public GeneratorInfo saveWith(String savePath) {
+        //文件路径分隔符
+        if(!savePath.endsWith(File.separator)){
+            savePath += File.separator;
+        }
         this.savePath = savePath;
         return GeneratorInfo.INSTANCE;
     }

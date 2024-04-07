@@ -7,6 +7,7 @@ import com.dingwd.domain.ParaMap;
 import com.dingwd.domain.ProjectInfo;
 import com.dingwd.enums.PackageTypeEnum;
 import com.dingwd.service.file.FileGetSavePathService;
+import com.dingwd.service.template.TemplateService;
 import com.dingwd.var.ClassParam;
 import com.dingwd.var.TableInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ import java.util.Map;
 public class GeneratorService {
 
     @Autowired
-    private FreeMarkerService freeMarkerService;
+    private TemplateService templateService;
     @Autowired
     private TableService tableService;
     @Autowired
@@ -85,7 +86,7 @@ public class GeneratorService {
                         String savePath = fileGetSavePathService.getSavePath(generatorInfo.getFileSuffix(),
                                 projectInfo.getSavePath(), modelInfo);
                         String fileSuffix = modelInfo.typeNameAndKind().prefixAndSuffix().getFileSuffix();
-                        freeMarkerService.generatorFile(parameters,
+                        templateService.generatorFile(parameters,
                                 templateName,
                                 savePath,
                                 getClassName(table, modelInfo) + "." + fileSuffix);

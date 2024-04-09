@@ -8,7 +8,7 @@
 
 # 参数
 
-1. [ClassParam.java](src%2Fmain%2Fjava%2Fcom%2Fdingwd%2Fvar%2FClassParam.java)
+1. [ClassParam.java](dtc-domain%2Fsrc%2Fmain%2Fjava%2Fcom%2Fdingwd%2Fdomain%2Fvar%2FClassParam.java)
 
 | 字段              | 含义                 |
 |:----------------|:-------------------|
@@ -29,7 +29,7 @@
  controllerPath  | controller的路径      
  controllerName  | controller的class类名 
 
-2. [Field.java](src%2Fmain%2Fjava%2Fcom%2Fdingwd%2Fvar%2FField.java)
+2. [Field.java](dtc-domain%2Fsrc%2Fmain%2Fjava%2Fcom%2Fdingwd%2Fdomain%2Fvar%2FField.java)
 
 | 字段             | 含义                   |
 |:---------------|:---------------------|
@@ -41,7 +41,7 @@
  fieldNameCamel | 字段驼峰                 
  fieldClass     | 数据库中字段类型 在 程序对应的类型   
 
-3. [TableInfo.java](src%2Fmain%2Fjava%2Fcom%2Fdingwd%2Fvar%2FTableInfo.java)
+3. [TableInfo.java](src%2Fmain%2Fjava%2Fcom%2Fdingwd%2Fvar%2FTableInfo.java)[TableInfo.java](dtc-domain%2Fsrc%2Fmain%2Fjava%2Fcom%2Fdingwd%2Fdomain%2Fvar%2FTableInfo.java)
 
 | 字段                      | 含义                      |
 |:------------------------|:------------------------|
@@ -53,7 +53,7 @@
  tableComment            | 表的注释                    
  fields                  | 字段列表                    
 
-4. [utilFun.java ftl中可以执行的方法](src%2Fmain%2Fjava%2Fcom%2Fdingwd%2Fvar%2Futil%2FutilFun.java)
+4. [utilFun.java ftl中可以执行的方法](dtc-domain%2Fsrc%2Fmain%2Fjava%2Fcom%2Fdingwd%2Fdomain%2Fvar%2Futil%2FutilFun.java)
 
 | 方法名称                                                     | 含义                          |
 |:---------------------------------------------------------|:----------------------------|

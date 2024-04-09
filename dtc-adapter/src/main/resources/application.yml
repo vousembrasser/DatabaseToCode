@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: databaseToCode
+
+  freemarker:
+    suffix: .ftl
+    content-type: text/html
+    charset: UTF-8
+    cache: false
+    template-loader-path: classpath:templates/
+
+  datasource:
+    url: jdbc:mysql://ip:port/database?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false&useSSL=false&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
